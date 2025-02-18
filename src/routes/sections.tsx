@@ -1,12 +1,16 @@
+/* eslint-disable react/prop-types */
 import { lazy, Suspense } from 'react';
+import { jwtDecode } from 'jwt-decode';
 import { Outlet, Navigate, useRoutes } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 
 import { varAlpha } from 'src/theme/styles';
-import { AuthLayout } from 'src/layouts/auth';
+import { configuration } from 'src/constants';
 import { DashboardLayout } from 'src/layouts/dashboard';
+
+import { NotFoundView } from 'src/sections/error';
 
 // ----------------------------------------------------------------------
 
@@ -18,6 +22,9 @@ export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
+interface PrivateRouteProps {
+  children: React.ReactElement;
+}
 
 const renderFallback = (
   <Box display="flex" alignItems="center" justifyContent="center" flex="1 1 auto">
@@ -32,15 +39,49 @@ const renderFallback = (
   </Box>
 );
 
+const isTokenValid = () => {
+  const token = localStorage.getItem(configuration.localStorage);
+  if (!token) return false;
+
+  try {
+    const decodedToken: { exp: number } = jwtDecode(token);
+    const isExpired = decodedToken.exp * 1000 < Date.now();
+    return !isExpired;
+  } catch (err) {
+    console.error("Invalid token:", err);
+    return false;
+  }
+};
+
+// flag replace to prevent going back to the prev
+const AuthRoute: React.FC<PrivateRouteProps> = ({ children }) =>
+  isTokenValid() ? children : <Navigate to="/" />;
+
+const RedirectIfAuthenticated: React.FC<{ children: React.ReactNode }> = ({ children }) =>
+  isTokenValid() ? <Navigate to="/dashboard" /> : <>{children}</>;
+
+
 export function Router() {
+
   return useRoutes([
     {
+      path: '/',
       element: (
-        <DashboardLayout>
-          <Suspense fallback={renderFallback}>
-            <Outlet />
-          </Suspense>
-        </DashboardLayout>
+        <RedirectIfAuthenticated>
+         <SignInPage />
+        </RedirectIfAuthenticated>
+      ),
+    },
+    {
+      path: '/dashboard',
+      element: (
+        <AuthRoute>
+          <DashboardLayout>
+            <Suspense fallback={renderFallback}>
+              <Outlet />
+            </Suspense>
+          </DashboardLayout>
+        </AuthRoute>
       ),
       children: [
         { element: <HomePage />, index: true },
@@ -50,20 +91,22 @@ export function Router() {
       ],
     },
     {
-      path: 'sign-in',
+      path: '/products',
       element: (
-        <AuthLayout>
-          <SignInPage />
-        </AuthLayout>
+        <AuthRoute>
+          <DashboardLayout>
+            <Suspense fallback={renderFallback}>
+              <ProductsPage />
+            </Suspense>
+          </DashboardLayout>
+        </AuthRoute>
       ),
     },
     {
-      path: '404',
-      element: <Page404 />,
-    },
-    {
       path: '*',
-      element: <Navigate to="/404" replace />,
+      element: (
+        <NotFoundView />
+      ),
     },
   ]);
 }

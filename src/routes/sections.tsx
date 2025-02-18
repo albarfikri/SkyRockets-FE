@@ -8,6 +8,7 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 
 import { varAlpha } from 'src/theme/styles';
 import { configuration } from 'src/constants';
+import { AuthLayout } from 'src/layouts/auth';
 import { DashboardLayout } from 'src/layouts/dashboard';
 
 import { NotFoundView } from 'src/sections/error';
@@ -48,7 +49,7 @@ const isTokenValid = () => {
     const isExpired = decodedToken.exp * 1000 < Date.now();
     return !isExpired;
   } catch (err) {
-    console.error("Invalid token:", err);
+    console.error('Invalid token:', err);
     return false;
   }
 };
@@ -60,15 +61,15 @@ const AuthRoute: React.FC<PrivateRouteProps> = ({ children }) =>
 const RedirectIfAuthenticated: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   isTokenValid() ? <Navigate to="/dashboard" /> : <>{children}</>;
 
-
 export function Router() {
-
   return useRoutes([
     {
       path: '/',
       element: (
         <RedirectIfAuthenticated>
-         <SignInPage />
+          <AuthLayout>
+            <SignInPage />
+          </AuthLayout>
         </RedirectIfAuthenticated>
       ),
     },
@@ -104,9 +105,7 @@ export function Router() {
     },
     {
       path: '*',
-      element: (
-        <NotFoundView />
-      ),
+      element: <NotFoundView />,
     },
   ]);
 }

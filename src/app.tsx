@@ -1,5 +1,7 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import 'src/global.css';
-
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 
 import Fab from '@mui/material/Fab';
@@ -12,10 +14,28 @@ import { ThemeProvider } from 'src/theme/theme-provider';
 
 import { Iconify } from 'src/components/iconify';
 
+import auth from './stores/auth';
+import { authService } from './services/authService';
+import { getLocalStorage } from './utils/local-storage';
+
 // ----------------------------------------------------------------------
 
 export default function App() {
   useScrollToTop();
+
+  const navigate = useNavigate();
+  const { setUserData } = auth();
+
+  useEffect(() => {
+    if (getLocalStorage() !== '') refetchUserData();
+  }, [])
+
+  const refetchUserData = () => {
+    authService.getUser().then(res => {
+      setUserData(res?.data)
+      navigate('/dashboard');
+    });
+  }
 
   const githubButton = (
     <Fab

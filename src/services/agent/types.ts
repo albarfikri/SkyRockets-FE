@@ -1,3 +1,4 @@
+
 export interface ApiResponse<T> {
   success: boolean;
   data: T;
@@ -25,4 +26,10 @@ export interface LogoutPayload {
 export interface LogutResponse {
   msg: string;
   error: string;
+}
+
+// getUser
+export interface GetUserReponse { 
+  msg: string;
+  data: object;
 }

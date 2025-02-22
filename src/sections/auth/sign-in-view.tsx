@@ -1,9 +1,9 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import type { LoginPayload } from 'src/services/agent/types';
 
-import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useState, useTransition } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -13,42 +13,60 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
+import { setLocalStorage } from 'src/utils/local-storage';
+
 import { configuration } from 'src/constants';
+import { authPage as strings } from 'src/strings';
 import { authService } from 'src/services/authService';
 
 import { Iconify } from 'src/components/iconify';
+import auth from 'src/stores/auth';
 
 
 export function SignInView() {
   const navigate = useNavigate();
+
+  const { setUserData } = auth();
 
   const [data, setData] = useState({
     email: '',
     password: '',
   });
 
+  const [isPending, startTransition] = useTransition();
+
   const { email, password } = data;
 
-  const handleLogin = async () => {
- 
+  const handleLogin = () => {
     if (!email || !password) {
-      console.log('email atau pass tidak boleh kosong');
-      return;
-    }
-    try {
-      const payload: LoginPayload = { email, password };
-      const {
-        data: { accessToken },
-      } = await authService.login(payload);
-      // Save token
-      toast.success('Login Successfully');
-      localStorage.setItem(configuration.localStorage, accessToken);
-      navigate('/dashboard');
-    } catch (err) {
-      toast.error('Login Failed. Try Again.');
-      console.log(err);
+      toast.info(strings.emptyField);
+    } else {
+      startTransition(() => {
+        hitLoginApi();
+      })
     }
   };
+
+  const hitLoginApi = async () => {
+    const payload: LoginPayload = { email, password };
+
+    authService.login(payload).then(res =>  {
+      const { data: { accessToken } } = res;
+      // Save token
+      toast.success(strings.successLogin);
+      setLocalStorage(configuration.localStorage, accessToken);
+    }).then(() => {
+      authService.getUser().then(res => {
+        setUserData(res?.data)
+        navigate('/dashboard');
+      });
+    }).catch((err) => {
+        // if failed remove token to prevent double login
+        authService.logout();
+        toast.error(strings.failedLogin);
+        console.log(err);
+    });
+  }
 
   const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = evt.target;
@@ -103,6 +121,7 @@ export function SignInView() {
         color="inherit"
         variant="contained"
         onClick={handleLogin}
+        disabled={isPending}
       >
         Sign in
       </LoadingButton>

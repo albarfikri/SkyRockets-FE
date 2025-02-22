@@ -1,5 +1,7 @@
 import 'src/global.css';
 
+import { ToastContainer } from 'react-toastify';
+
 import Fab from '@mui/material/Fab';
 
 import { Router } from 'src/routes/sections';
@@ -39,6 +41,7 @@ export default function App() {
     <ThemeProvider>
       <Router />
       {githubButton}
+      <ToastContainer />
     </ThemeProvider>
   );
 }

@@ -1,6 +1,8 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import type { LoginPayload } from 'src/services/agent/types';
 
 import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 import Box from '@mui/material/Box';
@@ -11,17 +13,13 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { useRouter } from 'src/routes/hooks';
-
 import { configuration } from 'src/constants';
 import { authService } from 'src/services/authService';
 
 import { Iconify } from 'src/components/iconify';
 
-import { decrypJwt, decryptWithSecret } from '../../utils/decrypt';
 
 export function SignInView() {
-  const router = useRouter();
   const navigate = useNavigate();
 
   const [data, setData] = useState({
@@ -42,14 +40,12 @@ export function SignInView() {
       const {
         data: { accessToken },
       } = await authService.login(payload);
-      console.log(accessToken, 'token albar');
-      const decryptJwt = decrypJwt(accessToken);
-      const result = decryptWithSecret(decryptJwt?.code || '');
       // Save token
+      toast.success('Login Successfully');
       localStorage.setItem(configuration.localStorage, accessToken);
       navigate('/dashboard');
-      console.log(accessToken, result, 'albarfikri42');
     } catch (err) {
+      toast.error('Login Failed. Try Again.');
       console.log(err);
     }
   };

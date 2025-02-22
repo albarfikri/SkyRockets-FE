@@ -8,6 +8,8 @@
   "scripts": {
     "dev": "vite",
     "start": "vite preview",
+    "deployDevAlbar": "scp -P 2221 -r dist/* albar-fikri@103.196.153.5:/var/www/html/pos-web && ssh -p 2221 albar-fikri@103.196.153.5 'sudo chown -R albar-fikri:www-data /var/www/html/pos-web && sudo chmod -R 755 /var/www/html/pos-web && sudo systemctl restart nginx'",
+    "deployDevYoga": "scp -P 2221 -r dist/* yoga@103.196.153.5:/var/www/html/pos-web && ssh -p 2221 yoga@103.196.153.5 'sudo chown -R yoga:www-data /var/www/html/pos-web && sudo chmod -R 755 /var/www/html/pos-web && sudo systemctl restart nginx'",
     "build": "tsc && vite build",
     "lint": "eslint \"src/**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "eslint --fix \"src/**/*.{js,jsx,ts,tsx}\"",

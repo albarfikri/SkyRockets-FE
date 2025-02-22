@@ -17,7 +17,7 @@ import { useRouter, usePathname } from 'src/routes/hooks';
 
 import { _myAccount } from 'src/_mock';
 import { configuration } from 'src/constants';
-import { authService } from 'src/api/authService';
+import { authService } from 'src/services/authService';
 
 // ----------------------------------------------------------------------
 

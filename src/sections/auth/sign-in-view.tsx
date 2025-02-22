@@ -1,4 +1,4 @@
-import type { LoginPayload } from 'src/api/agent/types';
+import type { LoginPayload } from 'src/services/agent/types';
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -14,7 +14,7 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { useRouter } from 'src/routes/hooks';
 
 import { configuration } from 'src/constants';
-import { authService } from 'src/api/authService';
+import { authService } from 'src/services/authService';
 
 import { Iconify } from 'src/components/iconify';
 

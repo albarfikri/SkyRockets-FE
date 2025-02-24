@@ -5,6 +5,17 @@ export interface ApiResponse<T> {
   message?: string;
 }
 
+export interface Response {
+  msg: string;
+  error: string;
+}
+
+export interface PaginationParams {
+  skip: number;
+  limit: number;
+}
+
+// ======================================================================
 // Login
 export interface LoginPayload {
   email: string;
@@ -23,13 +34,9 @@ export interface LogoutPayload {
   token: string;
 }
 
-export interface LogutResponse {
-  msg: string;
-  error: string;
-}
-
-// getUser
-export interface GetUserReponse { 
-  msg: string;
-  data: object;
+// ======================================================================
+// Products
+export interface ProductPayload {
+  categoryId: string;
+  companyId: string;
 }

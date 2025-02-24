@@ -1,11 +1,17 @@
-import { useState, useCallback } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import type { ProductPayload , PaginationParams } from 'src/services/agent/types';
+
+import { toast } from 'react-toastify';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
+import { Pagination } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 
 import { _products } from 'src/_mock';
+import products from 'src/stores/product';
+import { productService } from 'src/services/products';
 import { DashboardContent } from 'src/layouts/dashboard';
 
 import { ProductItem } from '../product-item';
@@ -58,11 +64,35 @@ const defaultFilters = {
 };
 
 export function ProductsView() {
+  const { selectedCompany } = products();
+  const { company_id } = selectedCompany;
+
   const [sortBy, setSortBy] = useState('featured');
 
   const [openFilter, setOpenFilter] = useState(false);
 
   const [filters, setFilters] = useState<FiltersProps>(defaultFilters);
+
+  const fetchProducts = async() => {
+    const payload: ProductPayload = {
+      categoryId: '',
+      companyId: company_id,
+    }
+    const pagination: PaginationParams = {
+      skip: 0,
+      limit: 10,
+    }
+    try {
+      const res = await productService.getProducts(payload, pagination)
+      toast.success('Data loaded unsuccessfully');
+    } catch (err) {
+      toast.error('Data loaded unsuccessfully');
+    }
+  }
+
+  useEffect(() => {
+    fetchProducts();
+  }, [])
 
   const handleOpenFilter = useCallback(() => {
     setOpenFilter(true);

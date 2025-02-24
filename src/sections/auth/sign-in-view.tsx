@@ -15,18 +15,20 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { setLocalStorage } from 'src/utils/local-storage';
 
+import auth from 'src/stores/auth';
 import { configuration } from 'src/constants';
 import { authPage as strings } from 'src/strings';
 import { authService } from 'src/services/authService';
 
 import { Iconify } from 'src/components/iconify';
-import auth from 'src/stores/auth';
+import products from 'src/stores/product';
 
 
 export function SignInView() {
   const navigate = useNavigate();
 
   const { setUserData } = auth();
+  const { setSelectedCompany } = products();
 
   const [data, setData] = useState({
     email: '',
@@ -57,7 +59,9 @@ export function SignInView() {
       setLocalStorage(configuration.localStorage, accessToken);
     }).then(() => {
       authService.getUser().then(res => {
-        setUserData(res?.data)
+        const response = res?.data as any;
+        setUserData(response);
+        setSelectedCompany(response?.config_account[0])
         navigate('/dashboard');
       });
     }).catch((err) => {

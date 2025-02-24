@@ -1,4 +1,3 @@
-import auth from 'src/stores/auth';
 import {
   _id,
   _price,

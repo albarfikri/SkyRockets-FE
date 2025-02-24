@@ -16,12 +16,12 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { setLocalStorage } from 'src/utils/local-storage';
 
 import auth from 'src/stores/auth';
+import products from 'src/stores/product';
 import { configuration } from 'src/constants';
 import { authPage as strings } from 'src/strings';
 import { authService } from 'src/services/authService';
 
 import { Iconify } from 'src/components/iconify';
-import products from 'src/stores/product';
 
 
 export function SignInView() {

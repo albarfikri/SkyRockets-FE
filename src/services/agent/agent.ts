@@ -19,7 +19,7 @@ export class ApiAgent {
         if (!config.headers) {
           config.headers = new AxiosHeaders();
         }
-        config.headers.Authorization = `Bearer ${getLocalStorage()}`; 
+        config.headers.Authorization = getLocalStorage() ? `Bearer ${getLocalStorage()}` : ''; 
         return config;
       },
       (error) => Promise.reject(error)

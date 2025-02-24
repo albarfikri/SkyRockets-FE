@@ -17,6 +17,7 @@ import { Iconify } from 'src/components/iconify';
 import auth from './stores/auth';
 import { authService } from './services/authService';
 import { getLocalStorage } from './utils/local-storage';
+import products from './stores/product';
 
 // ----------------------------------------------------------------------
 
@@ -25,6 +26,7 @@ export default function App() {
 
   const navigate = useNavigate();
   const { setUserData } = auth();
+  const { setSelectedCompany } = products();
 
   useEffect(() => {
     if (getLocalStorage() !== '') refetchUserData();
@@ -32,7 +34,9 @@ export default function App() {
 
   const refetchUserData = () => {
     authService.getUser().then(res => {
-      setUserData(res?.data)
+      const response = res?.data as any;
+      setUserData(response);
+      setSelectedCompany(response?.config_account[0])
       navigate('/dashboard');
     });
   }

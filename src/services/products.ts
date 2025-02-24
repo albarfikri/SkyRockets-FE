@@ -2,7 +2,7 @@
 
 import agent from './agent/agent';
 
-import type {  PaginationParams, ApiResponse, ProductPayload } from "./agent/types";
+import type {  ApiResponse, ProductPayload, PaginationParams } from "./agent/types";
 
 export const productService = {
     getProducts: (payload: ProductPayload, Pagination: PaginationParams) => 

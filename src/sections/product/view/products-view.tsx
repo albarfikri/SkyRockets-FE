@@ -73,7 +73,7 @@ export function ProductsView() {
 
   const [filters, setFilters] = useState<FiltersProps>(defaultFilters);
 
-  const fetchProducts = async() => {
+  const fetchProducts = useCallback(async () => {
     const payload: ProductPayload = {
       categoryId: '',
       companyId: company_id,
@@ -83,16 +83,17 @@ export function ProductsView() {
       limit: 10,
     }
     try {
-      const res = await productService.getProducts(payload, pagination)
-      toast.success('Data loaded unsuccessfully');
+      const res = await productService.getProducts(payload, pagination);
+      console.log(res, 'fikrialbar4');
+      toast.success('Data loaded successfully');
     } catch (err) {
       toast.error('Data loaded unsuccessfully');
     }
-  }
+  }, []); 
 
   useEffect(() => {
     fetchProducts();
-  }, [])
+  }, [fetchProducts])
 
   const handleOpenFilter = useCallback(() => {
     setOpenFilter(true);

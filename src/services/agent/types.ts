@@ -17,7 +17,6 @@ export interface DynamicResponse<T = any> {
   data: T;
 }
 
-
 export interface PaginationParams {
   skip: number;
   limit: number;
@@ -63,7 +62,19 @@ export interface ProductRes {
   updated_id: string;
   image: string;
   is_deleted: boolean;
+  status: 'sale',
+  colors: [
+    '#00AB55',
+    '#000000',
+    '#FFFFFF',
+    '#FFC0CB',
+    '#FF4842',
+    '#1890FF',
+    '#94D82D',
+    '#FFC107',
+  ],
 }
 
-// If the response is always an array of products:
-export type ProductResponse = ProductRes[];
+export interface ProductResponse {
+  data: ProductRes[],
+}

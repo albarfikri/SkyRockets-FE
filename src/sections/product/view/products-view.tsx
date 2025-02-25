@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import products from 'src/stores/product';
 import { productService } from 'src/services/products';
 import { DashboardContent } from 'src/layouts/dashboard';
-import {  type ProductRes, type ProductPayload, type DynamicResponse, type PaginationParams, ProductResponse } from 'src/services/agent/types';
+import {  type ProductRes, type ProductPayload, type PaginationParams } from 'src/services/agent/types';
 
 import { ProductItem } from '../product-item';
 import { ProductSort } from '../product-sort';
@@ -69,7 +69,7 @@ export function ProductsView() {
 
   const [openFilter, setOpenFilter] = useState(false);
 
-  const [productsList, setProductsList] = useState<ProductResponse[]>([]);
+  const [productsList, setProductsList] = useState<ProductRes[]>();
 
   const [filters, setFilters] = useState<FiltersProps>(defaultFilters);
 
@@ -114,8 +114,6 @@ export function ProductsView() {
   const canReset = Object.keys(filters).some(
     (key) => filters[key as keyof FiltersProps] !== defaultFilters[key as keyof FiltersProps]
   );
-
-  console.log(productsList?.data, 'albarifkir4');
 
   return (
     <DashboardContent>
@@ -164,7 +162,7 @@ export function ProductsView() {
       </Box>
 
       <Grid container spacing={3}>
-        {productsList?.data && productsList.data.map((product: ProductRes) => (
+        {productsList && productsList.map((product: ProductRes) => (
           <Grid key={product.id} xs={12} sm={6} md={3}>
             <ProductItem product={product} />
           </Grid>

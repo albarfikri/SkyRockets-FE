@@ -7,7 +7,10 @@ export type InputNumberValue = string | number | null | undefined;
 
 type Options = Intl.NumberFormatOptions | undefined;
 
-const DEFAULT_LOCALE = { code: 'en-US', currency: 'USD' };
+const DEFAULT_LOCALE = { 
+  EN: { code: 'en-US', currency: 'USD' },
+  IDR: { code: 'id-ID', currency: 'IDR' }, // Indonesian locale
+};
 
 function processInput(inputValue: InputNumberValue): number | null {
   if (inputValue == null || Number.isNaN(inputValue)) return null;
@@ -17,7 +20,7 @@ function processInput(inputValue: InputNumberValue): number | null {
 // ----------------------------------------------------------------------
 
 export function fNumber(inputValue: InputNumberValue, options?: Options) {
-  const locale = DEFAULT_LOCALE;
+  const locale = DEFAULT_LOCALE.IDR;
 
   const number = processInput(inputValue);
   if (number === null) return '';
@@ -34,7 +37,7 @@ export function fNumber(inputValue: InputNumberValue, options?: Options) {
 // ----------------------------------------------------------------------
 
 export function fCurrency(inputValue: InputNumberValue, options?: Options) {
-  const locale = DEFAULT_LOCALE;
+  const locale = DEFAULT_LOCALE.IDR;
 
   const number = processInput(inputValue);
   if (number === null) return '';
@@ -53,7 +56,7 @@ export function fCurrency(inputValue: InputNumberValue, options?: Options) {
 // ----------------------------------------------------------------------
 
 export function fPercent(inputValue: InputNumberValue, options?: Options) {
-  const locale = DEFAULT_LOCALE;
+  const locale = DEFAULT_LOCALE.IDR;
 
   const number = processInput(inputValue);
   if (number === null) return '';
@@ -71,7 +74,7 @@ export function fPercent(inputValue: InputNumberValue, options?: Options) {
 // ----------------------------------------------------------------------
 
 export function fShortenNumber(inputValue: InputNumberValue, options?: Options) {
-  const locale = DEFAULT_LOCALE;
+  const locale = DEFAULT_LOCALE.IDR;
 
   const number = processInput(inputValue);
   if (number === null) return '';

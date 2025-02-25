@@ -65,10 +65,10 @@ export function ProductItem({ product }: { product: ProductRes }) {
           textDecoration: 'line-through',
         }}
       >
-        {product.purchase_price && fCurrency(product.purchase_price)}
+        {product.selling_price && fCurrency(product.selling_price)}
       </Typography>
       &nbsp;
-      {fCurrency(product.purchase_price)}
+      {fCurrency(product.selling_price)}
     </Typography>
   );
 
@@ -86,7 +86,7 @@ export function ProductItem({ product }: { product: ProductRes }) {
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          <ColorPreview colors={product.colors} />
+          {/* <ColorPreview colors={product.colors} /> */}
           {renderPrice}
         </Box>
       </Stack>

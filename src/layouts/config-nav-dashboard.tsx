@@ -1,3 +1,4 @@
+import { Label } from 'src/components/label';
 import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -22,6 +23,11 @@ export const navData = [
     //     +3
     //   </Label>
     // ),
+  },
+  {
+    title: 'Inventory',
+    path: '/inventory',
+    icon: icon('ic-cart'),
   },
   // {
   //   title: 'User',

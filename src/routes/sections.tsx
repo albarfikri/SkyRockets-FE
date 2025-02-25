@@ -18,6 +18,7 @@ import { NotFoundView } from 'src/sections/error';
 export const HomePage = lazy(() => import('src/pages/home'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
+export const InventoryPage = lazy(() => import('src/pages/inventory'))
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
@@ -103,6 +104,30 @@ export function Router() {
         </AuthRoute>
       ),
     },
+    {
+      path: '/inventory',
+      element: (
+        <AuthRoute>
+          <DashboardLayout>
+            <Suspense fallback={renderFallback}>
+              <InventoryPage />
+            </Suspense>
+          </DashboardLayout>
+        </AuthRoute>
+      ),
+    },
+    // {
+    //   path: '/user',
+    //   element: (
+    //     <AuthRoute>
+    //       <DashboardLayout>
+    //         <Suspense fallback={renderFallback}>
+    //           <UserPage />
+    //         </Suspense>
+    //       </DashboardLayout>
+    //     </AuthRoute>
+    //   ),
+    // },
     {
       path: '*',
       element: <NotFoundView />,

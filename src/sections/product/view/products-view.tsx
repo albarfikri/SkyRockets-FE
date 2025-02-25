@@ -1,6 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import type { ProductPayload , PaginationParams } from 'src/services/agent/types';
-
 import { toast } from 'react-toastify';
 import { useState, useEffect, useCallback } from 'react';
 
@@ -9,10 +7,10 @@ import { Pagination } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
-import { _products } from 'src/_mock';
 import products from 'src/stores/product';
 import { productService } from 'src/services/products';
 import { DashboardContent } from 'src/layouts/dashboard';
+import {  type ProductRes, type ProductPayload, type DynamicResponse, type PaginationParams, ProductResponse } from 'src/services/agent/types';
 
 import { ProductItem } from '../product-item';
 import { ProductSort } from '../product-sort';
@@ -71,6 +69,8 @@ export function ProductsView() {
 
   const [openFilter, setOpenFilter] = useState(false);
 
+  const [productsList, setProductsList] = useState<ProductResponse[]>([]);
+
   const [filters, setFilters] = useState<FiltersProps>(defaultFilters);
 
   const fetchProducts = useCallback(async () => {
@@ -83,8 +83,8 @@ export function ProductsView() {
       limit: 10,
     }
     try {
-      const res = await productService.getProducts(payload, pagination);
-      console.log(res, 'fikrialbar4');
+      const { data } = await productService.getProducts(payload, pagination);
+      setProductsList(data);
       toast.success('Data loaded successfully');
     } catch (err) {
       toast.error('Data loaded unsuccessfully');
@@ -114,6 +114,8 @@ export function ProductsView() {
   const canReset = Object.keys(filters).some(
     (key) => filters[key as keyof FiltersProps] !== defaultFilters[key as keyof FiltersProps]
   );
+
+  console.log(productsList?.data, 'albarifkir4');
 
   return (
     <DashboardContent>
@@ -162,7 +164,7 @@ export function ProductsView() {
       </Box>
 
       <Grid container spacing={3}>
-        {_products.map((product) => (
+        {productsList?.data && productsList.data.map((product: ProductRes) => (
           <Grid key={product.id} xs={12} sm={6} md={3}>
             <ProductItem product={product} />
           </Grid>

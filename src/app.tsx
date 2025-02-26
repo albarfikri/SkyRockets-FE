@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import 'src/global.css';
+
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -15,9 +16,9 @@ import { ThemeProvider } from 'src/theme/theme-provider';
 import { Iconify } from 'src/components/iconify';
 
 import auth from './stores/auth';
+import products from './stores/product';
 import { authService } from './services/authService';
 import { getLocalStorage } from './utils/local-storage';
-import products from './stores/product';
 
 // ----------------------------------------------------------------------
 

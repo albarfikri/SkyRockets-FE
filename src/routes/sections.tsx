@@ -110,11 +110,16 @@ export function Router() {
         <AuthRoute>
           <DashboardLayout>
             <Suspense fallback={renderFallback}>
-              <InventoryPage />
+              <Outlet /> 
             </Suspense>
           </DashboardLayout>
         </AuthRoute>
       ),
+      children: [
+        { element: <InventoryPage />, index: true },
+        { path: 'warehouse', element: <ProductsPage /> },
+        { path: 'stocks', element: <ProductsPage /> },
+      ],
     },
     // {
     //   path: '/user',

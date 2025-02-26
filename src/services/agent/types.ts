@@ -75,6 +75,18 @@ export interface ProductRes {
   ],
 }
 
+export interface CategoryRes {
+  id: string;
+  name: string;
+  company_id: string;
+  created_at: string; // ISO date string
+  updated_at: string | null;
+  created_id: string;
+  updated_id: string | null;
+  is_deleted: boolean;
+}
+
+
 export interface ProductResponse {
   data: ProductRes[],
 }

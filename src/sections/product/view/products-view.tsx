@@ -7,39 +7,25 @@ import { Pagination } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
+import type { FiltersProps } from 'src/components/dialog/main-dialog';
 import products from 'src/stores/product';
+import { MainDialog } from 'src/components/dialog/main-dialog';
 import { productService } from 'src/services/products';
 import { DashboardContent } from 'src/layouts/dashboard';
-import {  type ProductRes, type ProductPayload, type PaginationParams } from 'src/services/agent/types';
+import {  type ProductRes, type ProductPayload, type PaginationParams, CategoryRes } from 'src/services/agent/types';
 
 import { ProductItem } from '../product-item';
 import { ProductSort } from '../product-sort';
 import { CartIcon } from '../product-cart-widget';
-import { ProductFilters } from '../product-filters';
 
-import type { FiltersProps } from '../product-filters';
 
 // ----------------------------------------------------------------------
-
-const GENDER_OPTIONS = [
-  { value: 'men', label: 'Men' },
-  { value: 'women', label: 'Women' },
-  { value: 'kids', label: 'Kids' },
-];
 
 const CATEGORY_OPTIONS = [
   { value: 'all', label: 'All' },
   { value: 'shose', label: 'Shose' },
   { value: 'apparel', label: 'Apparel' },
   { value: 'accessories', label: 'Accessories' },
-];
-
-const RATING_OPTIONS = ['up4Star', 'up3Star', 'up2Star', 'up1Star'];
-
-const PRICE_OPTIONS = [
-  { value: 'below', label: 'Below $25' },
-  { value: 'between', label: 'Between $25 - $75' },
-  { value: 'above', label: 'Above $75' },
 ];
 
 const COLOR_OPTIONS = [
@@ -55,9 +41,7 @@ const COLOR_OPTIONS = [
 
 const defaultFilters = {
   price: '',
-  gender: [GENDER_OPTIONS[0].value],
   colors: [COLOR_OPTIONS[4]],
-  rating: RATING_OPTIONS[0],
   category: CATEGORY_OPTIONS[0].value,
 };
 
@@ -70,6 +54,7 @@ export function ProductsView() {
   const [openFilter, setOpenFilter] = useState(false);
 
   const [productsList, setProductsList] = useState<ProductRes[]>();
+  const [categoryList, setCategoryList] = useState<CategoryRes[]>([]);
 
   const [filters, setFilters] = useState<FiltersProps>(defaultFilters);
 
@@ -89,7 +74,20 @@ export function ProductsView() {
     } catch (err) {
       toast.error('Data loaded unsuccessfully');
     }
-  }, []); 
+  }, [company_id]); 
+
+  const fetchCategory = useCallback(async () => {
+    const payload: any = {
+      companyId: company_id,
+    }
+    try {
+      const { data } = await productService.getCategory(payload);
+      setCategoryList(data);
+      toast.success('Data loaded successfully');
+    } catch (err) {
+      toast.error('Data loaded unsuccessfully');
+    }
+  }, [company_id]); 
 
   useEffect(() => {
     fetchProducts();
@@ -97,6 +95,7 @@ export function ProductsView() {
 
   const handleOpenFilter = useCallback(() => {
     setOpenFilter(true);
+    fetchCategory()
   }, []);
 
   const handleCloseFilter = useCallback(() => {
@@ -131,7 +130,7 @@ export function ProductsView() {
         sx={{ mb: 5 }}
       >
         <Box gap={1} display="flex" flexShrink={0} sx={{ my: 1 }}>
-          <ProductFilters
+          <MainDialog
             canReset={canReset}
             filters={filters}
             onSetFilters={handleSetFilters}
@@ -140,11 +139,9 @@ export function ProductsView() {
             onCloseFilter={handleCloseFilter}
             onResetFilter={() => setFilters(defaultFilters)}
             options={{
-              genders: GENDER_OPTIONS,
-              categories: CATEGORY_OPTIONS,
-              ratings: RATING_OPTIONS,
-              price: PRICE_OPTIONS,
-              colors: COLOR_OPTIONS,
+              categories: categoryList?.length
+                ? categoryList.map(item => ({ value: item.name, label: item.name }))
+                : [],
             }}
           />
 

@@ -1,12 +1,16 @@
-import { useState, useCallback } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { toast } from 'react-toastify';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
+import { Pagination } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import Pagination from '@mui/material/Pagination';
 import Typography from '@mui/material/Typography';
 
-import { _products } from 'src/_mock';
+import products from 'src/stores/product';
+import { productService } from 'src/services/products';
 import { DashboardContent } from 'src/layouts/dashboard';
+import {  type ProductRes, type ProductPayload, type PaginationParams } from 'src/services/agent/types';
 
 import { ProductItem } from '../product-item';
 import { ProductSort } from '../product-sort';
@@ -58,11 +62,38 @@ const defaultFilters = {
 };
 
 export function ProductsView() {
+  const { selectedCompany } = products();
+  const { company_id } = selectedCompany;
+
   const [sortBy, setSortBy] = useState('featured');
 
   const [openFilter, setOpenFilter] = useState(false);
 
+  const [productsList, setProductsList] = useState<ProductRes[]>();
+
   const [filters, setFilters] = useState<FiltersProps>(defaultFilters);
+
+  const fetchProducts = useCallback(async () => {
+    const payload: ProductPayload = {
+      categoryId: '',
+      companyId: company_id,
+    }
+    const pagination: PaginationParams = {
+      skip: 0,
+      limit: 10,
+    }
+    try {
+      const { data } = await productService.getProducts(payload, pagination);
+      setProductsList(data);
+      toast.success('Data loaded successfully');
+    } catch (err) {
+      toast.error('Data loaded unsuccessfully');
+    }
+  }, []); 
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts])
 
   const handleOpenFilter = useCallback(() => {
     setOpenFilter(true);
@@ -131,7 +162,7 @@ export function ProductsView() {
       </Box>
 
       <Grid container spacing={3}>
-        {_products.map((product) => (
+        {productsList && productsList.map((product: ProductRes) => (
           <Grid key={product.id} xs={12} sm={6} md={3}>
             <ProductItem product={product} />
           </Grid>

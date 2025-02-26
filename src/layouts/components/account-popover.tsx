@@ -1,5 +1,6 @@
 import type { IconButtonProps } from '@mui/material/IconButton';
 
+import { toast } from 'react-toastify';
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,9 +16,13 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { useRouter, usePathname } from 'src/routes/hooks';
 
+import { deleteLocalStorage } from 'src/utils/local-storage';
+
+import auth from 'src/stores/auth';
 import { _myAccount } from 'src/_mock';
 import { configuration } from 'src/constants';
-import { authService } from 'src/api/authService';
+import { authPage as strings } from 'src/strings';
+import { authService } from 'src/services/authService';
 
 // ----------------------------------------------------------------------
 
@@ -34,6 +39,9 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
   const router = useRouter();
   const navigate = useNavigate();
   const pathname = usePathname();
+  const { userData } = auth();
+  const username = userData?.username || '';
+  const email = userData?.email || ''
 
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
@@ -55,8 +63,9 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
 
   const handleLogout = async () => {
     authService.logout().then(() => {
+      toast.success(strings.successLogout)
       navigate('/');
-      localStorage.removeItem(configuration.localStorage)
+      deleteLocalStorage(configuration.localStorage)
     });
   }
 
@@ -75,7 +84,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         {...other}
       >
         <Avatar src={_myAccount.photoURL} alt={_myAccount.displayName} sx={{ width: 1, height: 1 }}>
-          {_myAccount.displayName.charAt(0).toUpperCase()}
+          {username.charAt(0).toUpperCase()}
         </Avatar>
       </IconButton>
 
@@ -93,11 +102,11 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
       >
         <Box sx={{ p: 2, pb: 1.5 }}>
           <Typography variant="subtitle2" noWrap>
-            {_myAccount?.displayName}
+            {username}
           </Typography>
 
           <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-            {_myAccount?.email}
+            {email}
           </Typography>
         </Box>
 

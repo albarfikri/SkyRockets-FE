@@ -1,7 +1,9 @@
-import type { LoginPayload } from 'src/api/agent/types';
+/* eslint-disable import/no-extraneous-dependencies */
+import type { LoginPayload } from 'src/services/agent/types';
 
-import { useState } from 'react';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import { useState, useTransition } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -11,48 +13,64 @@ import Typography from '@mui/material/Typography';
 import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
-import { useRouter } from 'src/routes/hooks';
+import { setLocalStorage } from 'src/utils/local-storage';
 
+import auth from 'src/stores/auth';
+import products from 'src/stores/product';
 import { configuration } from 'src/constants';
-import { authService } from 'src/api/authService';
+import { authPage as strings } from 'src/strings';
+import { authService } from 'src/services/authService';
 
 import { Iconify } from 'src/components/iconify';
 
-import { decrypJwt, decryptWithSecret } from '../../utils/decrypt';
 
 export function SignInView() {
-  const router = useRouter();
   const navigate = useNavigate();
+
+  const { setUserData } = auth();
+  const { setSelectedCompany } = products();
 
   const [data, setData] = useState({
     email: '',
     password: '',
   });
 
+  const [isPending, startTransition] = useTransition();
+
   const { email, password } = data;
 
-  const handleLogin = async () => {
- 
+  const handleLogin = () => {
     if (!email || !password) {
-      console.log('email atau pass tidak boleh kosong');
-      return;
-    }
-    try {
-      const payload: LoginPayload = { email, password };
-      const {
-        data: { accessToken },
-      } = await authService.login(payload);
-      console.log(accessToken, 'token albar');
-      const decryptJwt = decrypJwt(accessToken);
-      const result = decryptWithSecret(decryptJwt?.code || '');
-      // Save token
-      localStorage.setItem(configuration.localStorage, accessToken);
-      navigate('/dashboard');
-      console.log(accessToken, result, 'albarfikri42');
-    } catch (err) {
-      console.log(err);
+      toast.info(strings.emptyField);
+    } else {
+      startTransition(() => {
+        hitLoginApi();
+      })
     }
   };
+
+  const hitLoginApi = async () => {
+    const payload: LoginPayload = { email, password };
+
+    authService.login(payload).then(res =>  {
+      const { data: { accessToken } } = res;
+      // Save token
+      toast.success(strings.successLogin);
+      setLocalStorage(configuration.localStorage, accessToken);
+    }).then(() => {
+      authService.getUser().then(res => {
+        const response = res?.data as any;
+        setUserData(response);
+        setSelectedCompany(response?.config_account[0])
+        navigate('/dashboard');
+      });
+    }).catch((err) => {
+        // if failed remove token to prevent double login
+        authService.logout();
+        toast.error(strings.failedLogin);
+        console.log(err);
+    });
+  }
 
   const handleChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = evt.target;
@@ -107,6 +125,7 @@ export function SignInView() {
         color="inherit"
         variant="contained"
         onClick={handleLogin}
+        disabled={isPending}
       >
         Sign in
       </LoadingButton>

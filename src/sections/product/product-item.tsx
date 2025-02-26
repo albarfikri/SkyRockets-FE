@@ -1,3 +1,5 @@
+import type { ProductRes } from 'src/services/agent/types';
+
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Card from '@mui/material/Card';
@@ -21,7 +23,7 @@ export type ProductItemProps = {
   priceSale: number | null;
 };
 
-export function ProductItem({ product }: { product: ProductItemProps }) {
+export function ProductItem({ product }: { product: ProductRes }) {
   const renderStatus = (
     <Label
       variant="inverted"
@@ -42,7 +44,7 @@ export function ProductItem({ product }: { product: ProductItemProps }) {
     <Box
       component="img"
       alt={product.name}
-      src={product.coverUrl}
+      src={product.image}
       sx={{
         top: 0,
         width: 1,
@@ -63,10 +65,10 @@ export function ProductItem({ product }: { product: ProductItemProps }) {
           textDecoration: 'line-through',
         }}
       >
-        {product.priceSale && fCurrency(product.priceSale)}
+        {product.selling_price && fCurrency(product.selling_price)}
       </Typography>
       &nbsp;
-      {fCurrency(product.price)}
+      {fCurrency(product.selling_price)}
     </Typography>
   );
 
@@ -84,7 +86,7 @@ export function ProductItem({ product }: { product: ProductItemProps }) {
         </Link>
 
         <Box display="flex" alignItems="center" justifyContent="space-between">
-          <ColorPreview colors={product.colors} />
+          {/* <ColorPreview colors={product.colors} /> */}
           {renderPrice}
         </Box>
       </Stack>

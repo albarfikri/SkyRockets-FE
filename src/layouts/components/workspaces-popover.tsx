@@ -1,6 +1,6 @@
 import type { ButtonBaseProps } from '@mui/material/ButtonBase';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Popover from '@mui/material/Popover';
@@ -18,7 +18,7 @@ import { Iconify } from 'src/components/iconify';
 export type WorkspacesPopoverProps = ButtonBaseProps & {
   data?: {
     id: string;
-    name: string;
+    companyName: string;
     logo: string;
     plan: string;
   }[];
@@ -26,6 +26,10 @@ export type WorkspacesPopoverProps = ButtonBaseProps & {
 
 export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopoverProps) {
   const [workspace, setWorkspace] = useState(data[0]);
+
+  useEffect(() => {
+    setWorkspace(data[0]);
+  }, [data])
 
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
@@ -72,7 +76,7 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
         }}
         {...other}
       >
-        {renderAvatar(workspace?.name, workspace?.logo)}
+        {renderAvatar(workspace?.companyName, workspace?.logo)}
 
         <Box
           gap={1}
@@ -81,7 +85,7 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
           alignItems="center"
           sx={{ typography: 'body2', fontWeight: 'fontWeightSemiBold' }}
         >
-          {workspace?.name}
+          {workspace?.companyName}
           {renderLabel(workspace?.plan)}
         </Box>
 
@@ -114,10 +118,10 @@ export function WorkspacesPopover({ data = [], sx, ...other }: WorkspacesPopover
               selected={option.id === workspace?.id}
               onClick={() => handleChangeWorkspace(option)}
             >
-              {renderAvatar(option.name, option.logo)}
+              {renderAvatar(option.companyName, option.logo)}
 
               <Box component="span" sx={{ flexGrow: 1 }}>
-                {option.name}
+                {option.companyName}
               </Box>
 
               {renderLabel(option.plan)}

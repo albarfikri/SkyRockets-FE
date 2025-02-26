@@ -2,6 +2,8 @@ import type { AxiosInstance, AxiosResponse, AxiosRequestConfig, InternalAxiosReq
 
 import axios, { AxiosHeaders } from "axios";
 
+import { getLocalStorage } from "src/utils/local-storage";
+
 import { configuration } from "src/constants";
 
 const { devBaseUrl } = configuration;
@@ -17,8 +19,7 @@ export class ApiAgent {
         if (!config.headers) {
           config.headers = new AxiosHeaders();
         }
-
-        // config.headers.Authorization = `Bearer ${localStorage.getItem(localStorageString) || ""}`; 
+        config.headers.Authorization = getLocalStorage() ? `Bearer ${getLocalStorage()}` : ''; 
         return config;
       },
       (error) => Promise.reject(error)

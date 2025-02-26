@@ -12,7 +12,6 @@ import {
 } from './_mock';
 
 // ----------------------------------------------------------------------
-
 export const _myAccount = {
   displayName: 'Jaydon Frankie',
   email: 'demo@minimals.cc',

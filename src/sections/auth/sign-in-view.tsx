@@ -41,7 +41,7 @@ export function SignInView() {
 
   const handleLogin = () => {
     if (!email || !password) {
-      toast.info(strings.emptyField);
+      toast.info(`Field ${!email ? 'Email' : ''} ${!password ? 'Password' : ''} cannot be blank`);
     } else {
       startTransition(() => {
         hitLoginApi();

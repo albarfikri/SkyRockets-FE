@@ -1,4 +1,8 @@
+/* eslint-disable import/no-duplicates */
 /* eslint-disable react-hooks/exhaustive-deps */
+import type { CategoryRes } from 'src/services/agent/types';
+import type { FiltersProps } from 'src/components/dialog/side-dialog';
+
 import { toast } from 'react-toastify';
 import { useState, useEffect, useCallback } from 'react';
 
@@ -7,17 +11,16 @@ import { Pagination } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 
-import type { FiltersProps } from 'src/components/dialog/main-dialog';
 import products from 'src/stores/product';
-import { MainDialog } from 'src/components/dialog/main-dialog';
 import { productService } from 'src/services/products';
 import { DashboardContent } from 'src/layouts/dashboard';
-import {  type ProductRes, type ProductPayload, type PaginationParams, CategoryRes } from 'src/services/agent/types';
+import {  type ProductRes, type ProductPayload, type PaginationParams } from 'src/services/agent/types';
+
+import { SideDialog } from 'src/components/dialog/side-dialog';
 
 import { ProductItem } from '../product-item';
 import { ProductSort } from '../product-sort';
 import { CartIcon } from '../product-cart-widget';
-
 
 // ----------------------------------------------------------------------
 
@@ -130,7 +133,7 @@ export function ProductsView() {
         sx={{ mb: 5 }}
       >
         <Box gap={1} display="flex" flexShrink={0} sx={{ my: 1 }}>
-          <MainDialog
+          <SideDialog
             canReset={canReset}
             filters={filters}
             onSetFilters={handleSetFilters}

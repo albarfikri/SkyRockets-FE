@@ -1,4 +1,7 @@
-import { useState, useCallback } from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import type { PaginationParams, InventoryWarehouseResponse } from 'src/services/agent/types';
+
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -10,52 +13,76 @@ import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
 import { _users } from 'src/_mock';
+import products from 'src/stores/product';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { inventoryWarehouseService } from 'src/services/inventoryWarehouseService';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
+import MainDialog from 'src/components/dialog/main-dialog';
+import { TableHeader } from 'src/components/table/table-head';
+import { TableNoData } from 'src/components/table/table-no-data';
+import { TableToolbar } from 'src/components/table/table-toolbar';
+import { emptyRows, applyFilter, getComparator } from 'src/components/table/utils';
 
-import { TableNoData } from '../table-no-data';
-import { UserTableRow } from '../user-table-row';
-import { UserTableHead } from '../user-table-head';
-import { TableEmptyRows } from '../table-empty-rows';
-import { UserTableToolbar } from '../user-table-toolbar';
-import { emptyRows, applyFilter, getComparator } from '../utils';
+import { TableEmptyRows } from 'src/sections/user/table-empty-rows';
 
-import type { UserProps } from '../user-table-row';
+import { TableRows } from './table-row';
 
 // ----------------------------------------------------------------------
 
-export function InventoryView() {
+export function WarehouseView() {
   const table = useTable();
+  const { selectedCompany } = products();
+  const { company_id } = selectedCompany;
 
   const [filterName, setFilterName] = useState('');
+  const [data, setData] = useState<InventoryWarehouseResponse[]>();
+  const [open, setOpen] = useState(false);
 
-  const dataFiltered: UserProps[] = applyFilter({
-    inputData: _users,
-    comparator: getComparator(table.order, table.orderBy),
-    filterName,
+  useEffect(() => {
+    fetchWarehouse();
+  }, []);
+
+  const fetchWarehouse = async () => {
+    const payload = { companyId: company_id }
+    const pagination: PaginationParams = {
+      skip: 0,
+      limit: 10,
+    }
+    const res = await inventoryWarehouseService.getWarehouse(payload, pagination);
+    setData(res.data);
+  }
+
+  const orderBy = table.orderBy as keyof InventoryWarehouseResponse;
+
+  const dataFiltered: InventoryWarehouseResponse[] = applyFilter({
+    inputData: data ?? [],
+    comparator: getComparator<InventoryWarehouseResponse, keyof InventoryWarehouseResponse>(table.order, orderBy),
+    filterValue: '',
+    filterBy: table.order,
   });
 
   const notFound = !dataFiltered.length && !!filterName;
-
+  console.log(open, 'albaropen')
   return (
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Inventory
+          Warehouse
         </Typography>
         <Button
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={() => setOpen(true)}
         >
-          New user
+          Add Warehouse
         </Button>
       </Box>
 
       <Card>
-        <UserTableToolbar
+        <TableToolbar
           numSelected={table.selected.length}
           filterName={filterName}
           onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -67,7 +94,7 @@ export function InventoryView() {
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
+              <TableHeader
                 order={table.order}
                 orderBy={table.orderBy}
                 rowCount={_users.length}
@@ -81,11 +108,10 @@ export function InventoryView() {
                 }
                 headLabel={[
                   { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
-                  { id: '' },
+                  { id: 'location', label: 'Location' },
+                  { id: 'contact', label: 'Contact' },
+                  { id: 'createdAt', label: 'CreatedAt' },
+                  { id: '', label: '' },
                 ]}
               />
               <TableBody>
@@ -95,7 +121,7 @@ export function InventoryView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <UserTableRow
+                    <TableRows
                       key={row.id}
                       row={row}
                       selected={table.selected.includes(row.id)}
@@ -124,6 +150,11 @@ export function InventoryView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
+      <MainDialog 
+        open={open}
+        children={<Typography>Albar</Typography>}
+        handleClose={() => setOpen(false)}
+      />
     </DashboardContent>
   );
 }
@@ -132,7 +163,7 @@ export function InventoryView() {
 
 export function useTable() {
   const [page, setPage] = useState(0);
-  const [orderBy, setOrderBy] = useState('name');
+  const [orderBy, setOrderBy] = useState<string>('name');
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [selected, setSelected] = useState<string[]>([]);
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');

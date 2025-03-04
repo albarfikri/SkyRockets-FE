@@ -1,120 +1,64 @@
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Radio from '@mui/material/Radio';
-import Badge from '@mui/material/Badge';
+import * as React from 'react';
+
 import Button from '@mui/material/Button';
-import Drawer from '@mui/material/Drawer';
-import Rating from '@mui/material/Rating';
-import Divider from '@mui/material/Divider';
-import Checkbox from '@mui/material/Checkbox';
-import FormGroup from '@mui/material/FormGroup';
-import RadioGroup from '@mui/material/RadioGroup';
-import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import CloseIcon from '@mui/icons-material/Close';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
 
-import { Iconify } from 'src/components/iconify';
-import { Scrollbar } from 'src/components/scrollbar';
-import { ColorPicker } from 'src/components/color-utils';
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 
-// ----------------------------------------------------------------------
+interface MainDialogProps {
+    open: boolean,
+    handleClose: () => void,
+    children: React.ReactNode,
+    singleButtonFullWidth?: boolean,
+    singleButton?: boolean,
+    doubleButton?: boolean,
+}
 
-export type FiltersProps = {
-  category: string;
-};
-
-type ProductFiltersProps = {
-  canReset: boolean;
-  openFilter: boolean;
-  filters: FiltersProps;
-  onOpenFilter: () => void;
-  onCloseFilter: () => void;
-  onResetFilter: () => void;
-  onSetFilters: (updateState: Partial<FiltersProps>) => void;
-  options: {
-    categories: { value: string; label: string }[];
-  };
-};
-
-export function MainDialog({
-  filters,
-  options,
-  canReset,
-  openFilter,
-  onSetFilters,
-  onOpenFilter,
-  onCloseFilter,
-  onResetFilter,
-}: ProductFiltersProps) {
-
-  const renderCategory = (
-    <Stack spacing={1}>
-      <Typography variant="subtitle2">Category</Typography>
-      <RadioGroup>
-        {options.categories.map((option) => (
-          <FormControlLabel
-            key={option.value}
-            value={option.value}
-            control={
-              <Radio
-                checked={filters.category.includes(option.value)}
-                onChange={() => onSetFilters({ category: option.value })}
-              />
-            }
-            label={option.label}
-          />
-        ))}
-      </RadioGroup>
-    </Stack>
-  );
-
+export default function MainDialog({ open, handleClose, children, singleButtonFullWidth, singleButton, doubleButton }: MainDialogProps) {
   return (
-    <>
-      <Button
-        disableRipple
-        color="inherit"
-        endIcon={
-          <Badge color="error" variant="dot" invisible={!canReset}>
-            <Iconify icon="ic:round-filter-list" />
-          </Badge>
-        }
-        onClick={onOpenFilter}
+    <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+        fullWidth
+        maxWidth="md"
       >
-        Filters
-      </Button>
-
-      <Drawer
-        anchor="right"
-        open={openFilter}
-        onClose={onCloseFilter}
-        PaperProps={{
-          sx: { width: 280, overflow: 'hidden' },
-        }}
-      >
-        <Box display="flex" alignItems="center" sx={{ pl: 2.5, pr: 1.5, py: 2 }}>
-          <Typography variant="h6" flexGrow={1}>
-            Filters
-          </Typography>
-
-          <IconButton onClick={onResetFilter}>
-            <Badge color="error" variant="dot" invisible={!canReset}>
-              <Iconify icon="solar:refresh-linear" />
-            </Badge>
-          </IconButton>
-
-          <IconButton onClick={onCloseFilter}>
-            <Iconify icon="mingcute:close-line" />
-          </IconButton>
-        </Box>
-
-        <Divider />
-
-        <Scrollbar>
-          <Stack spacing={3} sx={{ p: 3 }}>
-            {renderCategory}
-          </Stack>
-        </Scrollbar>
-      </Drawer>
-    </>
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Modal title
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={handleClose}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          {children}
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={handleClose}>
+            Save changes
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
   );
 }

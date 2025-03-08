@@ -19,46 +19,69 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 }));
 
 interface MainDialogProps {
-    open: boolean,
-    handleClose: () => void,
-    children: React.ReactNode,
-    singleButtonFullWidth?: boolean,
-    singleButton?: boolean,
-    doubleButton?: boolean,
+  open: boolean;
+  handleClose: () => void;
+  children: React.ReactNode;
+  singleButtonFullWidth?: {
+    isEnabled: false;
+    btnText: string;
+    onClick: () => void;
+  };
+  singleButton?: {
+    isEnabled: false;
+    btnText: string;
+    onClick: () => void;
+  };
+  doubleButton?: {
+    isEnabled: false;
+    firstBtnText: string;
+    secondBtnText: string;
+    onClickFirst: () => void;
+    onClickSecond: () => void;
+  },
+  title: string,
 }
 
-export default function MainDialog({ open, handleClose, children, singleButtonFullWidth, singleButton, doubleButton }: MainDialogProps) {
+export default function MainDialog({
+  open,
+  handleClose,
+  children,
+  singleButtonFullWidth,
+  singleButton,
+  doubleButton,
+  title,
+}: MainDialogProps) {
   return (
     <BootstrapDialog
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-        fullWidth
-        maxWidth="md"
+      onClose={handleClose}
+      aria-labelledby="customized-dialog-title"
+      open={open}
+      fullWidth
+      maxWidth="md"
+    >
+      <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+        {title}
+      </DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={handleClose}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.grey[500],
+        })}
       >
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Modal title
-        </DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={handleClose}
-          sx={(theme) => ({
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: theme.palette.grey[500],
-          })}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent dividers>
-          {children}
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={handleClose}>
-            Save changes
+        <CloseIcon />
+      </IconButton>
+      <DialogContent dividers>{children}</DialogContent>
+      <DialogActions>
+        {singleButton?.isEnabled && (
+          <Button autoFocus onClick={singleButton.onClick}>
+            {singleButton.btnText}
           </Button>
-        </DialogActions>
-      </BootstrapDialog>
+        )}
+      </DialogActions>
+    </BootstrapDialog>
   );
 }

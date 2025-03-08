@@ -152,6 +152,7 @@ export function WarehouseView() {
       </Card>
       <MainDialog 
         open={open}
+        title="Tambah Gudang"
         children={<Typography>Albar</Typography>}
         handleClose={() => setOpen(false)}
       />

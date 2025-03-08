@@ -15,5 +15,8 @@ export const inventoryWarehouseService = {
       agent.get<ApiResponse<InventoryWarehouseResponse[]>>(
         `api/v1/warehouse?company_id=${payload.companyId}&limit=${Pagination.limit}`
       ),
+    delWarehouse:(id: string) => agent.delete<ApiResponse<any[]>>(
+      `api/v1/warehouse/${id}`
+    )
 };
   

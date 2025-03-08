@@ -39,10 +39,11 @@ export function WarehouseView() {
   const [filterName, setFilterName] = useState('');
   const [data, setData] = useState<InventoryWarehouseResponse[]>();
   const [open, setOpen] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
 
   useEffect(() => {
     fetchWarehouse();
-  }, []);
+  }, [isDeleted]);
 
   const fetchWarehouse = async () => {
     const payload = { companyId: company_id }
@@ -52,6 +53,7 @@ export function WarehouseView() {
     }
     const res = await inventoryWarehouseService.getWarehouse(payload, pagination);
     setData(res.data);
+    setIsDeleted(false)
   }
 
   const orderBy = table.orderBy as keyof InventoryWarehouseResponse;
@@ -62,6 +64,15 @@ export function WarehouseView() {
     filterValue: '',
     filterBy: table.order,
   });
+
+  const handleDelete =  async (id: string) => {
+    try {
+      await inventoryWarehouseService.delWarehouse(id);
+      setIsDeleted(true)
+    } catch (_) {
+      setIsDeleted(false)
+    }
+  }
 
   const notFound = !dataFiltered.length && !!filterName;
   console.log(open, 'albaropen')
@@ -126,6 +137,7 @@ export function WarehouseView() {
                       row={row}
                       selected={table.selected.includes(row.id)}
                       onSelectRow={() => table.onSelectRow(row.id)}
+                      onDelete={handleDelete}
                     />
                   ))}
 

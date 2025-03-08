@@ -14,6 +14,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { Iconify } from 'src/components/iconify';
+import { inventoryWarehouseService } from 'src/services/inventoryWarehouseService';
 
 // ----------------------------------------------------------------------
 
@@ -21,9 +22,10 @@ type TableRowProps = {
   row: InventoryWarehouseResponse;
   selected: boolean;
   onSelectRow: () => void;
+  onDelete: (id: string) => Promise<void>;
 };
 
-export function TableRows({ row, selected, onSelectRow }: TableRowProps) {
+export function TableRows({ row, selected, onSelectRow, onDelete}: TableRowProps) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -88,7 +90,7 @@ export function TableRows({ row, selected, onSelectRow }: TableRowProps) {
             Edit
           </MenuItem>
 
-          <MenuItem onClick={handleClosePopover} sx={{ color: 'error.main' }}>
+          <MenuItem onClick={() => onDelete(row.id)} sx={{ color: 'error.main' }}>
             <Iconify icon="solar:trash-bin-trash-bold" />
             Delete
           </MenuItem>

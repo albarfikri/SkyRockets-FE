@@ -1,12 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import type { PaginationParams, InventoryWarehouseResponse } from 'src/services/agent/types';
 
+import { toast } from 'react-toastify';
 import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
+import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
+import { OutlinedInput } from '@mui/material';
 import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
@@ -14,6 +17,7 @@ import TablePagination from '@mui/material/TablePagination';
 
 import { _users } from 'src/_mock';
 import products from 'src/stores/product';
+import { general as strings } from 'src/strings';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { inventoryWarehouseService } from 'src/services/inventoryWarehouseService';
 
@@ -29,6 +33,8 @@ import { TableEmptyRows } from 'src/sections/user/table-empty-rows';
 
 import { TableRows } from './table-row';
 
+import type { FormAddWarehouse } from '../types';
+
 // ----------------------------------------------------------------------
 
 export function WarehouseView() {
@@ -39,6 +45,12 @@ export function WarehouseView() {
   const [filterName, setFilterName] = useState('');
   const [data, setData] = useState<InventoryWarehouseResponse[]>();
   const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState<FormAddWarehouse>({
+    name: "",
+    location: "",
+    contact: "",
+    company_id: `${company_id}`,
+  });
   const [isDeleted, setIsDeleted] = useState(false);
 
   useEffect(() => {
@@ -46,24 +58,81 @@ export function WarehouseView() {
   }, [isDeleted]);
 
   const fetchWarehouse = async () => {
-    const payload = { companyId: company_id }
+    const payload = { companyId: company_id };
     const pagination: PaginationParams = {
       skip: 0,
       limit: 10,
-    }
+    };
     const res = await inventoryWarehouseService.getWarehouse(payload, pagination);
     setData(res.data);
     setIsDeleted(false)
+    setFormData({ name: '', location: '', contact: '', company_id: `${company_id}`})
   }
 
   const orderBy = table.orderBy as keyof InventoryWarehouseResponse;
 
   const dataFiltered: InventoryWarehouseResponse[] = applyFilter({
     inputData: data ?? [],
-    comparator: getComparator<InventoryWarehouseResponse, keyof InventoryWarehouseResponse>(table.order, orderBy),
+    comparator: getComparator<InventoryWarehouseResponse, keyof InventoryWarehouseResponse>(
+      table.order,
+      orderBy
+    ),
     filterValue: '',
     filterBy: table.order,
   });
+  
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setFormData((prevState: FormAddWarehouse) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+
+  const renderContentAdd = () => {
+    const fields = [
+      {
+        field: 'name',
+        type: 'text',
+      },
+      {
+        field: 'Location',
+        type: 'text',
+      },
+      {
+        field: 'Contact',
+        type: 'number',
+      },
+    ];
+    return (
+      <Grid container spacing={2}>
+        {fields.map((m) => (
+          <Grid item xs={12} key={m.field}>
+            <OutlinedInput
+              fullWidth
+              type={m.type}
+              value={formData[m.field.toLowerCase() as keyof FormAddWarehouse]}
+              onChange={handleChange}
+              placeholder={m.field}
+              name={m.field.toLowerCase()} // Matches state keys
+            />
+          </Grid>
+        ))}
+      </Grid>
+    );
+  };
+
+  const onSaveWarehouse = async () => {
+    try {
+      await inventoryWarehouseService.addWarehouse({ ...formData});
+      toast.success(strings.succeedAddData);
+      setOpen(false);
+      fetchWarehouse()
+    } catch(err){
+      toast.success(strings.failedAddData);
+    }
+  } 
 
   const handleDelete =  async (id: string) => {
     try {
@@ -75,7 +144,7 @@ export function WarehouseView() {
   }
 
   const notFound = !dataFiltered.length && !!filterName;
-  console.log(open, 'albaropen')
+
   return (
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
@@ -162,11 +231,16 @@ export function WarehouseView() {
           onRowsPerPageChange={table.onChangeRowsPerPage}
         />
       </Card>
-      <MainDialog 
+      <MainDialog
         open={open}
         title="Tambah Gudang"
-        children={<Typography>Albar</Typography>}
+        children={renderContentAdd()}
         handleClose={() => setOpen(false)}
+        singleButton={{
+          isEnabled: true,
+          btnText: 'Save',
+          onClick: () => onSaveWarehouse(),
+        }}
       />
     </DashboardContent>
   );

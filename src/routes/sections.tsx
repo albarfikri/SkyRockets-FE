@@ -9,6 +9,7 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 import { varAlpha } from 'src/theme/styles';
 import { configuration } from 'src/constants';
 import { AuthLayout } from 'src/layouts/auth';
+import { authService } from 'src/services/authService';
 import { DashboardLayout } from 'src/layouts/dashboard';
 
 import { NotFoundView } from 'src/sections/error';
@@ -21,6 +22,7 @@ export const UserPage = lazy(() => import('src/pages/user'));
 export const InventoryPage = lazy(() => import('src/pages/inventory'))
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
+export const WarehousePage = lazy(() => import('src/pages/warehouse'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
 
 // ----------------------------------------------------------------------
@@ -48,6 +50,9 @@ const isTokenValid = () => {
   try {
     const decodedToken: { exp: number } = jwtDecode(token);
     const isExpired = decodedToken.exp * 1000 < Date.now();
+    if (isExpired) {
+      authService.logout();
+    }
     return !isExpired;
   } catch (err) {
     console.error('Invalid token:', err);
@@ -117,7 +122,7 @@ export function Router() {
       ),
       children: [
         { element: <InventoryPage />, index: true },
-        { path: 'warehouse', element: <ProductsPage /> },
+        { path: 'warehouse', element: <WarehousePage /> },
         { path: 'stocks', element: <ProductsPage /> },
       ],
     },

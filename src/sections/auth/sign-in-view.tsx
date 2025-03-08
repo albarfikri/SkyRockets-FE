@@ -41,7 +41,7 @@ export function SignInView() {
 
   const handleLogin = () => {
     if (!email || !password) {
-      toast.info(strings.emptyField);
+      toast.info(`Field ${!email ? 'Email' : ''} ${!password ? 'Password' : ''} cannot be blank`);
     } else {
       startTransition(() => {
         hitLoginApi();
@@ -66,9 +66,10 @@ export function SignInView() {
       });
     }).catch((err) => {
         // if failed remove token to prevent double login
-        authService.logout();
-        toast.error(strings.failedLogin);
-        console.log(err);
+        const errMessage = err?.response?.data?.message;
+        if(errMessage === 'Double Login!') toast.error(`Your account has login already in another browser.`);
+        else if (errMessage === 'Invalid credentials') toast.error('Email or Password does not match')
+        else toast.error(errMessage);
     });
   }
 

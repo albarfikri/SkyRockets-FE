@@ -75,6 +75,11 @@ export interface ProductRes {
   ],
 }
 
+
+export interface ProductResponse {
+  data: ProductRes[],
+}
+
 export interface CategoryRes {
   id: string;
   name: string;
@@ -87,6 +92,20 @@ export interface CategoryRes {
 }
 
 
-export interface ProductResponse {
-  data: ProductRes[],
+// ======================================================================
+// Inventory - Warehouse
+export interface InventoryWarehouseResponse { 
+  id: string;
+  name: string;
+  location: string;
+  contact: string;
+  company_id: string;
+  created_at: string; // ISO date string
+  updated_at: string | null;
+  created_id: string;
+  updated_id: string | null;
+  is_deleted: boolean;
+  asc: string;
+  dsc: string;
 }
+  

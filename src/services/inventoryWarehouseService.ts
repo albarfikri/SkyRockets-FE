@@ -1,3 +1,5 @@
+import type { FormAddWarehouse } from 'src/sections/warehouse/types';
+
 import agent from './agent/agent';
 
 import type { ProductRes, ApiResponse, CategoryRes, ProductPayload, PaginationParams, InventoryWarehouseResponse } from "./agent/types";
@@ -17,6 +19,7 @@ export const inventoryWarehouseService = {
       ),
     delWarehouse:(id: string) => agent.delete<ApiResponse<any[]>>(
       `api/v1/warehouse/${id}`
-    )
+    ),
+    addWarehouse: (payload: FormAddWarehouse) => agent.post<ApiResponse<object>, FormAddWarehouse>("/api/v1/warehouse", payload),
 };
   

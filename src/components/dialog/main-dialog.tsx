@@ -23,17 +23,17 @@ interface MainDialogProps {
   handleClose: () => void;
   children: React.ReactNode;
   singleButtonFullWidth?: {
-    isEnabled: false;
+    isEnabled: string;
     btnText: string;
     onClick: () => void;
   };
   singleButton?: {
-    isEnabled: false;
+    isEnabled: boolean;
     btnText: string;
     onClick: () => void;
   };
   doubleButton?: {
-    isEnabled: false;
+    isEnabled: string;
     firstBtnText: string;
     secondBtnText: string;
     onClickFirst: () => void;

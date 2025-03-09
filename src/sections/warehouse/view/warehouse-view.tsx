@@ -37,20 +37,24 @@ import type { FormAddWarehouse } from '../types';
 
 // ----------------------------------------------------------------------
 
+
+
 export function WarehouseView() {
   const table = useTable();
   const { selectedCompany } = products();
   const { company_id } = selectedCompany;
 
-  const [filterName, setFilterName] = useState('');
-  const [data, setData] = useState<InventoryWarehouseResponse[]>();
-  const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState<FormAddWarehouse>({
+  const initAddWarehouseState: FormAddWarehouse = {
     name: "",
     location: "",
     contact: "",
-    company_id: `${company_id}`,
-  });
+    company_id,
+  }
+
+  const [filterName, setFilterName] = useState('');
+  const [data, setData] = useState<InventoryWarehouseResponse[]>();
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState<FormAddWarehouse>(initAddWarehouseState);
   const [isDeleted, setIsDeleted] = useState(false);
 
   useEffect(() => {
@@ -66,7 +70,7 @@ export function WarehouseView() {
     const res = await inventoryWarehouseService.getWarehouse(payload, pagination);
     setData(res.data);
     setIsDeleted(false)
-    setFormData({ name: '', location: '', contact: '', company_id: `${company_id}`})
+    setFormData(initAddWarehouseState)
   }
 
   const orderBy = table.orderBy as keyof InventoryWarehouseResponse;
@@ -93,7 +97,7 @@ export function WarehouseView() {
   const renderContentAdd = () => {
     const fields = [
       {
-        field: 'name',
+        field: 'Name',
         type: 'text',
       },
       {

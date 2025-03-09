@@ -27,6 +27,7 @@ import MainDialog from 'src/components/dialog/main-dialog';
 import { TableHeader } from 'src/components/table/table-head';
 import { TableNoData } from 'src/components/table/table-no-data';
 import { TableToolbar } from 'src/components/table/table-toolbar';
+import { RenderRowsSkeleton } from 'src/components/skeleton/rows-skeleton';
 import { emptyRows, applyFilter, getComparator } from 'src/components/table/utils';
 
 import { TableEmptyRows } from 'src/sections/user/table-empty-rows';
@@ -56,12 +57,14 @@ export function WarehouseView() {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState<FormAddWarehouse>(initAddWarehouseState);
   const [isDeleted, setIsDeleted] = useState(false);
+  const [isLoadData, setIsLoadData] = useState(false);
 
   useEffect(() => {
     fetchWarehouse();
   }, [isDeleted]);
 
   const fetchWarehouse = async () => {
+    setIsLoadData(true);
     const payload = { companyId: company_id };
     const pagination: PaginationParams = {
       skip: 0,
@@ -71,6 +74,7 @@ export function WarehouseView() {
     setData(res.data);
     setIsDeleted(false)
     setFormData(initAddWarehouseState)
+    setIsLoadData(false);
   }
 
   const orderBy = table.orderBy as keyof InventoryWarehouseResponse;
@@ -149,6 +153,14 @@ export function WarehouseView() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  const header = [
+    { id: 'name', label: 'Name' },
+    { id: 'location', label: 'Location' },
+    { id: 'contact', label: 'Contact' },
+    { id: 'createdAt', label: 'CreatedAt' },
+    { id: '', label: '' },
+  ]
+
   return (
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
@@ -190,30 +202,29 @@ export function WarehouseView() {
                     _users.map((user) => user.id)
                   )
                 }
-                headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'location', label: 'Location' },
-                  { id: 'contact', label: 'Contact' },
-                  { id: 'createdAt', label: 'CreatedAt' },
-                  { id: '', label: '' },
-                ]}
+                headLabel={header}
               />
               <TableBody>
-                {dataFiltered
-                  .slice(
-                    table.page * table.rowsPerPage,
-                    table.page * table.rowsPerPage + table.rowsPerPage
-                  )
-                  .map((row) => (
-                    <TableRows
-                      key={row.id}
-                      row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
-                      onDelete={handleDelete}
-                    />
-                  ))}
+                { isLoadData ? 
+                  RenderRowsSkeleton({ columns: header.length + 1, isDeletedAllEnabled: true, rowsPerPage: table.rowsPerPage }) :
 
+                  dataFiltered
+                    .slice(
+                      table.page * table.rowsPerPage,
+                      table.page * table.rowsPerPage + table.rowsPerPage
+                    )
+                    .map((row) => (
+                      <TableRows
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onDelete={handleDelete}
+                      />
+                    ))
+                  
+                }
+             
                 <TableEmptyRows
                   height={68}
                   emptyRows={emptyRows(table.page, table.rowsPerPage, _users.length)}

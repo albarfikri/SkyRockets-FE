@@ -14,7 +14,6 @@ import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { Iconify } from 'src/components/iconify';
-import { inventoryWarehouseService } from 'src/services/inventoryWarehouseService';
 
 // ----------------------------------------------------------------------
 
@@ -22,7 +21,8 @@ type TableRowProps = {
   row: InventoryWarehouseResponse;
   selected: boolean;
   onSelectRow: () => void;
-  onDelete: (id: string) => Promise<void>;
+  // onDelete: (id: string) => Promise<void>;
+  onDelete: (id: string) => void;
 };
 
 export function TableRows({ row, selected, onSelectRow, onDelete}: TableRowProps) {

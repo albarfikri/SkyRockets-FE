@@ -28,6 +28,7 @@ import { TableHeader } from 'src/components/table/table-head';
 import { TableNoData } from 'src/components/table/table-no-data';
 import { TableToolbar } from 'src/components/table/table-toolbar';
 import { RenderRowsSkeleton } from 'src/components/skeleton/rows-skeleton';
+import ConfirmationDialog from 'src/components/dialog/confirmation-dialog';
 import { emptyRows, applyFilter, getComparator } from 'src/components/table/utils';
 
 import { TableEmptyRows } from 'src/sections/user/table-empty-rows';
@@ -58,6 +59,8 @@ export function WarehouseView() {
   const [formData, setFormData] = useState<FormAddWarehouse>(initAddWarehouseState);
   const [isDeleted, setIsDeleted] = useState(false);
   const [isLoadData, setIsLoadData] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deletedId, setDeletedId] = useState('');
 
   useEffect(() => {
     fetchWarehouse();
@@ -142,12 +145,20 @@ export function WarehouseView() {
     }
   } 
 
-  const handleDelete =  async (id: string) => {
+  const handleDelete = (id: string) => {
+    setDeletedId(id);
+    setOpenDeleteDialog(true);
+  }
+
+  const processDelete = async () => {
     try {
-      await inventoryWarehouseService.delWarehouse(id);
+      await inventoryWarehouseService.delWarehouse(deletedId);
       setIsDeleted(true)
     } catch (_) {
       setIsDeleted(false)
+    } finally {
+      setDeletedId('');
+      setOpenDeleteDialog(false);
     }
   }
 
@@ -256,6 +267,18 @@ export function WarehouseView() {
           btnText: 'Save',
           onClick: () => onSaveWarehouse(),
         }}
+      />
+      <ConfirmationDialog 
+        open={openDeleteDialog}
+        title="Delete Confirmation"
+        children={<Typography>{strings.deletedData}</Typography>}
+        handleClose={() => setOpenDeleteDialog(false)}
+        singleButton={{
+          isEnabled: true,
+          btnText: 'Yes',
+          onClick: () => processDelete(),
+        }}
+      
       />
     </DashboardContent>
   );

@@ -10,4 +10,5 @@ export const authPage = {
 export const general = {
     succeedAddData: 'Data saved successfully',
     failedAddData: 'Data saved unsuccessfully',
+    deletedData: 'This action cannot be undone. Are you sure you want to delete this item ?',
 }
